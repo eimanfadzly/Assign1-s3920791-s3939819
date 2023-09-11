@@ -1,7 +1,7 @@
-from dictionary.word_frequency import WordFrequency
-from dictionary.base_dictionary import BaseDictionary
 import bisect
 
+from .base_dictionary import BaseDictionary
+from .word_frequency import WordFrequency
 
 # ------------------------------------------------------------------------
 # This class is required TO BE IMPLEMENTED
@@ -14,54 +14,78 @@ import bisect
 class ArrayDictionary(BaseDictionary):
 
     def __init__(self):
-        # TO BE IMPLEMENTED
-        pass
+        self.word_frequencies = [] # Initialize an empty list to store word frequencies
 
 
     def build_dictionary(self, words_frequencies: [WordFrequency]):
         """
-        construct the data structure to store nodes
-        @param words_frequencies: list of (word, frequency) to be stored
-        """
-        # TO BE IMPLEMENTED
+        Build the Array-based dictionary from a list of WordFrequency objects.
 
+        Args:
+            words_frequencies (list of WordFrequency): List of WordFrequency objects containing words and their frequencies.
+        """
+        for word_frequency in words_frequencies:
+            # Append each word_frequency to the data structure
+            self.word_frequencies.append(word_frequency)
 
     def search(self, word: str) -> int:
         """
-        search for a word
-        @param word: the word to be searched
-        @return: frequency > 0 if found and 0 if NOT found
+        Search for a word in the Array-based dictionary and return its frequency if found.
+
+        Args:
+            word (str): The word to search for.
+
+        Returns:
+            int: The frequency of the word if found, 0 otherwise.
         """
-        # TO BE IMPLEMENTED
-
+        for word_frequency in self.word_frequencies:
+            if word_frequency.word == word:
+                return word_frequency.frequency
         return 0
-
+        
     def add_word_frequency(self, word_frequency: WordFrequency) -> bool:
         """
-        add a word and its frequency to the dictionary
-        @param word_frequency: (word, frequency) to be added
-        :return: True whether succeeded, False when word is already in the dictionary
-        """
-        # TO BE IMPLEMENTED
+        Add a word with its frequency to the Array-based dictionary.
 
-        return False
+        Args:
+            word_frequency (WordFrequency): WordFrequency object containing the word and its frequency.
+
+        Returns:
+            bool: True if the word was successfully added, False if it already exists in the dictionary.
+        """
+        for wf in self.word_frequencies:
+            if wf.word == word_frequency.word:
+                return False  # Word already exists
+        self.word_frequencies.append(word_frequency)
+        return True
 
     def delete_word(self, word: str) -> bool:
         """
-        delete a word from the dictionary
-        @param word: word to be deleted
-        @return: whether succeeded, e.g. return False when point not found
-        """
-        # find the position of 'word' in the list, if exists, will be at idx-1
-        # TO BE IMPLEMENTED
+        Delete a word from the Array-based dictionary.
 
-        return False
+        Args:
+            word (str): The word to be deleted.
+
+        Returns:
+            bool: True if the word was successfully deleted, False if it doesn't exist in the dictionary.
+        """
+        for wf in self.word_frequencies:
+            if wf.word == word:
+                self.word_frequencies.remove(wf)
+                return True
+        return False  # Word not found
 
 
     def autocomplete(self, prefix_word: str) -> [WordFrequency]:
         """
-        return a list of 3 most-frequent words in the dictionary that have 'prefix_word' as a prefix
-        @param prefix_word: word to be autocompleted
-        @return: a list (could be empty) of (at most) 3 most-frequent words with prefix 'prefix_word'
+        Get a list of WordFrequency objects that are autocompletions of the given prefix.
+
+        Args:
+            prefix_word (str): The prefix for which to find autocompletions.
+
+        Returns:
+            list of WordFrequency: List of WordFrequency objects representing autocompletions, sorted by frequency.
         """
-        return []
+        matching_words = [wf for wf in self.word_frequencies if wf.word.startswith(prefix_word)]
+        sorted_words = sorted(matching_words, key=lambda wf: wf.frequency, reverse=True)
+        return sorted_words[:3]  # Return the top 3
